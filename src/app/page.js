@@ -200,13 +200,7 @@ const ShareButtons = ({ result }) => {
       .catch(() => alert('복사에 실패했습니다. 직접 복사가 필요할 수 있습니다.'));
   };
   
-  const shareKakao = () => {
-    alert('카카오톡으로 공유하기! (실제 서비스에서는 카카오 SDK 연결이 필요합니다)');
-  };
   
-  const shareInstagram = () => {
-    alert('인스타그램에 결과 화면을 캡처해서 스토리로 공유해보세요!');
-  };
   
   return (
     <div className="flex flex-wrap justify-center gap-3 my-5">
@@ -253,6 +247,7 @@ const SecurityTestApp = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [results, setResults] = useState({});
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const fullJsonData = {
     "questions": [
@@ -419,12 +414,25 @@ const SecurityTestApp = () => {
   };
 
   // 답변 선택 처리
+  // handleAnswer 함수를 수정합니다
   const handleAnswer = (optionId) => {
     const newAnswers = [...answers, optionId];
     setAnswers(newAnswers);
     
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      // 다음 문제로 넘어갈 때 모바일에서의 선택 상태를 해제하기 위한 코드
+      setTimeout(() => {
+        // 푸터 요소 찾기
+        const footer = document.getElementById('footer');
+        
+        // 푸터 클릭하여 hover 상태 제거
+        if (footer) {
+          footer.click();
+        }
+        
+        // 다음 문제로 이동
+        setCurrentQuestion(currentQuestion + 1);
+      }, 500);
     } else {
       // 로딩 애니메이션 표시
       setIsLoading(true);
@@ -437,7 +445,6 @@ const SecurityTestApp = () => {
       }, 1500);
     }
   };
-
   // 테스트 다시 시작
   const handleRestart = () => {
     setCurrentQuestion(0);
@@ -601,7 +608,7 @@ const SecurityTestApp = () => {
           </div>
         ) : (
           // 질문 화면
-          <div className="p-6">
+          <div key={`question-${currentQuestion}`} className="p-6">
             <div className="mb-8">
               <div className="flex justify-between text-sm text-gray-500 mb-2">
                 <span className="font-medium">질문 {currentQuestion + 1} / {questions.length}</span>
@@ -640,7 +647,7 @@ const SecurityTestApp = () => {
       </div>
       
       {/* 푸터 */}
-      <div className="text-center mt-6 text-white text-opacity-95 text-sm relative z-10">
+      <div id = "footer" className="text-center mt-6 text-white text-opacity-95 text-sm relative z-10">
         <p className="font-medium">© 2025 融保工(융보공) 융합보안공학과 보안 동아리</p>
         
        
